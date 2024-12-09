@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+  .bg-image {
+    background-image: url("../../public/img/mobile_bg.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .bg-image-signUp {
+    background-image: url("../../public/img/signup_mobile_bg.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
