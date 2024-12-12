@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router";
 import animated_bg from "../../public/img/login_bg.webm";
+import { useAuthContext } from "../Context/AuthContext";
 
 function LoginPage() {
   const [avatar, setAvatar] = useState("");
@@ -11,6 +12,7 @@ function LoginPage() {
   const [pswdValue, setPswValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const navigate = useNavigate();
+  let authContext = useAuthContext();
 
   function loginAPI(evt) {
     evt.preventDefault();
@@ -24,7 +26,11 @@ function LoginPage() {
       })
       .then((res) => {
         if (res.status === 200) {
-          sessionStorage.setItem("_uid", res.data.jwt_token);
+          //sessionStorage.setItem("_uid", res.data.jwt_token);
+          authContext.setIsAuth({
+            loggedIn: true,
+            accessToken: res.data.jwt_token,
+          });
           navigate("/");
         }
       })

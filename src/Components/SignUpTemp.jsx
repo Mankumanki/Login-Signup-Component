@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router";
 import animated_bg from "../../public/img/SignUp_bg.webm";
+import { useAuthContext } from "../Context/AuthContext";
 
 function SignUpTemp() {
   const [pswLabel, setPswLabel] = useState(false);
@@ -10,6 +11,7 @@ function SignUpTemp() {
   const [pswdValue, setPswValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const navigate = useNavigate();
+  const authContext = useAuthContext();
 
   function signUpAPI(evt) {
     evt.preventDefault();
@@ -18,12 +20,18 @@ function SignUpTemp() {
       password: pswdValue,
     };
     axios
-      .post("http://localhost:3000/api/SignUp", bodyData)
+      .post("http://localhost:3000/api/SignUp", bodyData, {
+        withCredentials: true,
+      })
       .then((res) => {
         if (res.status === 201) {
+          authContext.setIsAuth({
+            loggedIn: true,
+            accessToken: res.data.jwt_token,
+          });
           navigate("/");
         } else {
-          console.log(res.data.message);
+          alert(res.data.message);
         }
       })
       .catch((err) => {

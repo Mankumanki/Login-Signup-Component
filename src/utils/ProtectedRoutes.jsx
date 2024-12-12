@@ -1,16 +1,16 @@
 import { Outlet, Navigate } from "react-router";
-import useAuth from "../hooks/useAuth";
+//import useAuth from "../hooks/useAuth";
+import { useAuthContext } from "../Context/AuthContext";
 
 function ProtectedRoutes() {
-  const isAuth = useAuth(
+  let authContext = useAuthContext();
+
+  /*const isAuth = useAuth(
     "http://localhost:3000/api/auth",
     sessionStorage.getItem("_uid")
-  );
+  );*/
 
-  if (isAuth === null) {
-    return null;
-  }
-  return isAuth ? <Outlet /> : <Navigate to="/Login" />;
+  return authContext?.isAuth?.loggedIn ? <Outlet /> : <Navigate to="/Login" />;
 }
 
 export default ProtectedRoutes;

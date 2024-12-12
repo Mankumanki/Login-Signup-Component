@@ -34,7 +34,18 @@ app.post("/api/SignUp", (req, res) => {
                 [email, hash]
               )
               .then(() => {
-                res.status(201).send();
+                let accessToken = generateAccssToken(email);
+                let refreshToken = generateRefreshToken(email);
+
+                res
+                  .status(201)
+                  .cookie("_myRefreshToken", refreshToken, {
+                    httpOnly: true,
+                    path: "/",
+                  })
+                  .json({
+                    jwt_token: accessToken,
+                  });
               })
               .catch((err) => {
                 console.log(
@@ -56,7 +67,7 @@ app.post("/api/SignUp", (req, res) => {
 
 function generateAccssToken(email) {
   return jwt.sign({ userID: email }, process.env.JWT_SECRET, {
-    expiresIn: 30,
+    expiresIn: 10,
   });
 }
 
@@ -66,9 +77,12 @@ function generateRefreshToken(email) {
   });
 }
 
-app.get("/api/auth", (req, res) => {
+/*app.get("/api/auth", (req, res) => {
   let accessToken = req.headers.authorization.split(" ")[1];
   let refreshToken = req.headers.cookie.split("=")[1];
+
+  //console.log("RefreshToken: " + refreshToken);
+
   jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (error, decode) => {
     if (error) {
       res.status(401).clearCookie("_myRefreshToken").send();
@@ -85,6 +99,40 @@ app.get("/api/auth", (req, res) => {
       });
     }
   });
+});*/
+
+app.get("/api/userdata", (req, res) => {
+  let accessToken = req.headers?.authorization?.split(" ")[1];
+  jwt.verify(accessToken, process.env.JWT_SECRET, (error, decode) => {
+    if (error) {
+      res.status(403).send();
+    } else {
+      res.status(200).json({ users: ["Sarthak Mehta", "Guest2", "Guest3"] });
+    }
+  });
+});
+
+app.get("/api/refresh", (req, res) => {
+  if (req.headers.cookie) {
+    let refreshToken = req.headers.cookie.split("=")[1];
+
+    jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
+      (error, decode) => {
+        if (error) {
+          res.status(401).clearCookie("_myRefreshToken").send();
+        } else {
+          let newAccessToken = generateAccssToken(decode.userID);
+          res.status(201).json({
+            jwt_token: newAccessToken,
+          });
+        }
+      }
+    );
+  } else {
+    res.status(401).send();
+  }
 });
 
 app.post("/api/Login", (req, res) => {
@@ -106,7 +154,7 @@ app.post("/api/Login", (req, res) => {
                   //secure: true,
                   httpOnly: true,
                   //sameSite: "none",
-                  path: "/api/auth",
+                  path: "/",
                 })
                 .json({ jwt_token: accessToken });
             } else {
