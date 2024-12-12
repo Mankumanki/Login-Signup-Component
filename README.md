@@ -1,8 +1,9 @@
-# React + Vite
+Login/SignUp Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Main Branch:
 
-Currently, two official plugins are available:
+1) It contains the Login/Signup Page with JWT strategy authentication.
+2) The approach saves the access Token in session storage.
+3) Refresh Token is stored in as https only cookie.
+4) In backend folder src/index.js you can change the expiration time of the token.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
